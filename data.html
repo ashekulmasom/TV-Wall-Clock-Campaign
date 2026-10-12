@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>টিভি-দেয়াল ঘড়ি ক্যাম্পেইন | Agent ranking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Hind+Siliguri:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--pink:#c2185b;--ink:#1f1b24;--mute:#5b5461;--line:#e6dde2;--bg:#fbf7f9;--card:#fff;--tint:#fde7ef;--soft:#faf5f7;--ok:#0b6b3a;--bad:#a1123f}
+@media (prefers-color-scheme:dark){:root{--pink:#ff6fa5;--ink:#f3eef1;--mute:#b9aeb6;--line:#3a3139;--bg:#17131a;--card:#211b24;--tint:#4a2236;--soft:#1c1720;--ok:#6ee7a8;--bad:#ff8fb0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans','Hind Siliguri',system-ui,sans-serif;line-height:1.45}
+.wrap{max-width:1280px;margin:0 auto;padding:24px 20px 56px;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-size:clamp(26px,4vw,38px);font-weight:800;font-family:'Hind Siliguri','Plus Jakarta Sans',sans-serif;color:var(--pink)}
+.sub{color:var(--mute);font-size:14px;margin-top:2px}
+.top{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:flex-end}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{min-height:44px;padding:0 18px;border-radius:999px;border:2px solid var(--pink);background:transparent;color:var(--pink);font:700 14px inherit;font-family:inherit;cursor:pointer}
+.pill[aria-pressed=true]{background:var(--pink);color:#fff}
+.mode .pill{border-color:var(--ink);color:var(--ink)}
+.mode .pill[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.winner{background:var(--pink);color:#fff;border-radius:16px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center;justify-content:space-between}
+.winner .name{font-size:clamp(22px,3.4vw,32px);font-weight:800}
+.winner .big{font-size:clamp(22px,3vw,30px);font-weight:800;text-align:right}
+.winner small{display:block;font-size:13px;font-weight:600;opacity:.92}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.card h2{margin:0;font-size:18px;font-weight:800}
+.note{font-size:13px;color:var(--mute);margin:2px 0 8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+.row input{flex:1 1 240px;min-height:52px;border:2px solid var(--line);border-radius:10px;padding:0 14px;font:700 20px inherit;font-family:inherit;background:var(--card);color:var(--ink);letter-spacing:.04em}
+.btn{min-height:52px;padding:0 24px;border:0;border-radius:10px;background:var(--pink);color:#fff;font:800 16px inherit;font-family:inherit;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--pink);border:2px solid var(--pink)}
+.result{margin-top:14px;border-radius:12px;background:var(--soft);padding:16px;display:none}
+.result h3{margin:0 0 8px;font-size:20px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.facts div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.facts b{display:block;font-size:22px}
+.facts span{font-size:12px;color:var(--mute)}
+.status{margin-top:10px;font-weight:700}
+.status.win{color:var(--ok)}
+.status.no{color:var(--mute)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--mute);font-weight:700;padding:8px 6px;border-bottom:2px solid var(--line)}
+td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+tr.tv td{background:var(--tint)}
+tr.ck td{background:var(--soft)}
+.rk{font-weight:800}
+.wal{font-size:12px;color:var(--mute)}
+.chip{display:inline-block;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:800;white-space:nowrap}
+.chip.tv{background:var(--pink);color:#fff}
+.chip.ck{border:2px solid var(--ink);padding:0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:14px}
+.rules{font-size:14px;color:var(--mute);max-width:80ch}
+#err{display:none;background:var(--tint);border-radius:12px;padding:16px;font-weight:600}
+#admin{display:none;flex-direction:column;gap:18px;max-width:760px}
+#admin label{display:block;font-weight:700;font-size:14px;margin:12px 0 4px}
+#admin input[type=text],#admin input[type=password]{width:100%;min-height:48px;border:2px solid var(--line);border-radius:10px;padding:0 12px;font:600 15px inherit;font-family:inherit;background:var(--card);color:var(--ink)}
+#admin input[type=file]{min-height:48px;font:600 15px inherit;font-family:inherit;color:var(--ink)}
+.msg{font-weight:700;margin-top:10px}
+.msg.err{color:var(--bad)}
+.msg.ok{color:var(--ok)}
+.sumtable{margin-top:10px}
+.sumtable table{min-width:0}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <div>
+      <h1>টিভি-দেয়াল ঘড়ি ক্যাম্পেইন</h1>
+      <div class="sub" id="asof">Loading latest ranking…</div>
+    </div>
+    <div class="pills mode" role="group" aria-label="Page mode">
+      <button class="pill" id="mViewer" aria-pressed="true">Viewer</button>
+      <button class="pill" id="mAdmin" aria-pressed="false">Admin</button>
+    </div>
+  </div>
+
+  <div id="err">The ranking could not be loaded. Please refresh the page or try again in a few minutes.</div>
+
+  <!-- ================= VIEWER ================= -->
+  <div id="viewer" style="display:flex;flex-direction:column;gap:20px">
+
+    <section class="card">
+      <h2>Check your rank</h2>
+      <div class="note">Type your agent wallet number</div>
+      <form class="row" id="lookupForm" autocomplete="off">
+        <label for="q" style="position:absolute;left:-9999px">Agent wallet number</label>
+        <input id="q" inputmode="numeric" placeholder="01XXXXXXXXX" maxlength="14">
+        <button class="btn" type="submit">Check</button>
+      </form>
+      <div class="result" id="result" aria-live="polite"></div>
+    </section>
+
+    <section class="winner">
+      <div><small id="tvLabel">32" LED TV winner</small><div class="name" id="tvName">—</div><small id="tvMeta"></small></div>
+      <div class="big"><small>Total cash in and cash out</small><span id="tvVal">—</span></div>
+    </section>
+
+    <div class="pills" id="tabs" role="group" aria-label="Distribution house"></div>
+
+    <section class="card">
+      <h2>Overall top 15</h2>
+      <div class="note">The top ranked agent of each distribution house gets the TV. Wall clock winners are tagged.</div>
+      <div class="scroll"><table id="overall"></table></div>
+    </section>
+
+    <div class="grid" id="cats"></div>
+
+    <p class="rules">How winners are picked: agents are ranked inside their own distribution house by total Cash In plus Cash Out for 1 to 31 October. The top ranked agent gets a 32-inch LED TV. From the remaining agents, the top 5 in each of Star, Gold, Silver and Carbon get a wall clock.</p>
+  </div>
+
+  <!-- ================= ADMIN ================= -->
+  <div id="admin">
+    <section class="card">
+      <h2>1. Connect to GitHub (first time only)</h2>
+      <div class="note">Only the owner of the GitHub repository can publish. Your key stays in this browser and is never shown to viewers.</div>
+      <label for="repo">Repository name</label>
+      <input type="text" id="repo" placeholder="your-username/agent-ranking" autocomplete="off">
+      <label for="token">Access token</label>
+      <input type="password" id="token" placeholder="github_pat_..." autocomplete="off">
+      <div class="row" style="margin-top:12px"><button class="btn ghost" id="saveSet" type="button">Save connection</button></div>
+      <div class="msg" id="setMsg" role="status"></div>
+    </section>
+
+    <section class="card">
+      <h2>2. Choose today's CSV file</h2>
+      <div class="note">Use the Daily Transaction Report with all agents (CSV, or the Excel file).</div>
+      <input type="file" id="file" accept=".csv,.xlsx" aria-label="Daily report file">
+      <div class="msg" id="fileMsg" role="status"></div>
+      <div class="sumtable" id="sum"></div>
+    </section>
+
+    <section class="card">
+      <h2>3. Publish</h2>
+      <div class="note">Viewers see the new ranking one to two minutes after you publish.</div>
+      <div class="row"><button class="btn" id="pub" type="button" disabled>Publish update</button></div>
+      <div class="msg" id="pubMsg" role="status"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const CATS=['STAR','GOLD','SILVER','CARBON'];
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+let DATA=null,RANKED=[],cur=0;
+
+/* ---------- ranking ---------- */
+function rank(D){
+  const rows=D.rows.map((r,i)=>({rank:i+1,total:D.rows.length,ra:r[0],w:r[1],n:r[2],cat:r[3],v:r[4],house:D.short}));
+  const tv=rows[0],clocks=new Set(),thr={};
+  CATS.forEach(c=>{
+    const list=rows.filter(r=>r.cat===c);
+    list.forEach((r,i)=>r.catRank=i+1);
+    const rest=list.filter(r=>r.w!==tv.w).slice(0,5);
+    rest.forEach(r=>clocks.add(r.w));
+    thr[c]=rest.length===5?rest[4].v:0;
+  });
+  rows.forEach(r=>{r.tv=r.w===tv.w;r.ck=clocks.has(r.w);r.thr=thr[r.cat]});
+  return rows;
+}
+const chip=r=>r.tv?'<span class="chip tv">TV</span>':r.ck?'<span class="chip ck">Clock</span>':'';
+const cls=r=>r.tv?'tv':r.ck?'ck':'';
+
+/* ---------- viewer ---------- */
+function render(){
+  const rows=RANKED[cur],D=DATA.dists[cur],tv=rows[0];
+  $('asof').textContent='Data as of '+DATA.asOf;
+  $('tvLabel').textContent='32" LED TV winner · '+D.short;
+  $('tvName').textContent=tv.n;
+  $('tvMeta').textContent=tv.cat+' agent · '+tv.w;
+  $('tvVal').textContent=fmt(tv.v);
+  $('tabs').innerHTML=DATA.dists.map((d,i)=>`<button class="pill" aria-pressed="${i===cur}" data-i="${i}">${esc(d.short)}</button>`).join('');
+  document.querySelectorAll('#tabs .pill').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render()});
+  $('overall').innerHTML='<tr><th>Rank</th><th>Agent</th><th>Category</th><th class="r">Cash in + out</th><th class="r">Prize</th></tr>'+
+    rows.slice(0,15).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${r.w}</div></td><td>${r.cat}</td><td class="r">${fmt(r.v)}</td><td class="r">${chip(r)}</td></tr>`).join('');
+  $('cats').innerHTML=CATS.map(c=>`<section class="card"><h2>${c}</h2><div class="note">Top 10 in category</div><div class="scroll"><table><tr><th>Rank</th><th>Agent</th><th class="r">Cash in + out</th><th class="r">Prize</th></tr>`+
+    rows.filter(r=>r.cat===c).slice(0,10).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${r.w}</div></td><td class="r">${fmt(r.v)}</td><td class="r">${chip(r)}</td></tr>`).join('')+`</table></div></section>`).join('');
+}
+$('lookupForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  let q=$('q').value.replace(/\D/g,'');
+  if(q.length===10)q='0'+q;
+  const box=$('result');box.style.display='block';
+  if(q.length!==11){box.innerHTML='<h3>Check the number</h3><div class="status no">An agent wallet number has 11 digits and starts with 01.</div>';return}
+  let hit=null;
+  RANKED.forEach(rows=>{const r=rows.find(x=>x.w===q);if(r)hit=r});
+  if(!hit){box.innerHTML='<h3>Number not found</h3><div class="status no">We could not find '+esc(q)+' in the ranking. Check the number and try again.</div>';return}
+  let status;
+  if(hit.tv)status='<div class="status win">You are the top agent and currently win the 32" LED TV.</div>';
+  else if(hit.ck)status='<div class="status win">You are in a wall clock position in '+hit.cat+'.</div>';
+  else if(hit.thr)status='<div class="status no">You need about '+fmt(Math.max(1,hit.thr-hit.v+1))+' more in cash in and cash out to reach a wall clock position in '+hit.cat+'.</div>';
+  else status='<div class="status no">Keep going. Every transaction counts toward your rank.</div>';
+  box.innerHTML=`<h3>${esc(hit.n)}</h3><div class="facts">
+    <div><b>${hit.rank}</b><span>Rank in ${esc(hit.house)} (of ${fmt(hit.total)})</span></div>
+    <div><b>${hit.cat}</b><span>Your category</span></div>
+    <div><b>${hit.catRank}</b><span>Rank in ${hit.cat}</span></div>
+    <div><b>${fmt(hit.v)}</b><span>Cash in + out</span></div></div>${status}`;
+});
+
+/* ---------- load data ---------- */
+function setData(j){DATA=j;RANKED=j.dists.map(rank);cur=Math.min(cur,j.dists.length-1)}
+fetch('data.json?v='+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{setData(j);render()}).catch(()=>{$('err').style.display='block';$('asof').textContent=''});
+
+/* ---------- mode switch ---------- */
+function mode(m){
+  $('viewer').style.display=m==='viewer'?'flex':'none';
+  $('admin').style.display=m==='admin'?'flex':'none';
+  $('mViewer').setAttribute('aria-pressed',m==='viewer');
+  $('mAdmin').setAttribute('aria-pressed',m==='admin');
+}
+$('mViewer').onclick=()=>mode('viewer');
+$('mAdmin').onclick=()=>mode('admin');
+
+/* ---------- admin: settings ---------- */
+const KEY='campaign_admin_v1';
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s){$('repo').value=s.repo||'';$('token').value=s.token||''}}catch(e){}
+$('saveSet').onclick=()=>{
+  const repo=$('repo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/$/,''),token=$('token').value.trim();
+  const m=$('setMsg');
+  if(!/^[\w.-]+\/[\w.-]+$/.test(repo)){m.className='msg err';m.textContent='Repository name looks like your-username/agent-ranking.';return}
+  if(token.length<20){m.className='msg err';m.textContent='Paste the full access token.';return}
+  $('repo').value=repo;
+  try{localStorage.setItem(KEY,JSON.stringify({repo,token}));m.className='msg ok';m.textContent='Saved in this browser.'}catch(e){m.className='msg err';m.textContent='This browser blocked saving. You will need to paste the token again next time.'}
+};
+
+/* ---------- admin: read file ---------- */
+async function unzip(buf){
+  const u=new Uint8Array(buf),dv=new DataView(buf),dec=new TextDecoder();
+  let e=u.length-22;while(e>0&&dv.getUint32(e,true)!==0x06054b50)e--;
+  let p=dv.getUint32(e+16,true);const n=dv.getUint16(e+10,true),o={};
+  for(let i=0;i<n;i++){
+    const m=dv.getUint16(p+10,true),cs=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),lo=dv.getUint32(p+42,true);
+    const name=dec.decode(u.slice(p+46,p+46+nl));p+=46+nl+xl+cl;
+    if(name!=='xl/sharedStrings.xml'&&name!=='xl/worksheets/sheet1.xml')continue;
+    const s=lo+30+dv.getUint16(lo+26,true)+dv.getUint16(lo+28,true),raw=u.slice(s,s+cs);
+    o[name]=m===0?dec.decode(raw):await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+  }
+  return o;
+}
+async function readXlsx(buf){
+  const z=await unzip(buf),x=s=>new DOMParser().parseFromString(s,'application/xml');
+  const ss=z['xl/sharedStrings.xml']?Array.from(x(z['xl/sharedStrings.xml']).getElementsByTagName('si')).map(s=>s.textContent):[];
+  const rows=[];
+  Array.from(x(z['xl/worksheets/sheet1.xml']).getElementsByTagName('row')).forEach(r=>{
+    const row=[];
+    Array.from(r.getElementsByTagName('c')).forEach(c=>{
+      const ref=c.getAttribute('r')||'',t=c.getAttribute('t');let col=0;
+      for(const ch of ref.replace(/[0-9]/g,''))col=col*26+ch.charCodeAt(0)-64;
+      const v=c.getElementsByTagName('v')[0];let val=v?v.textContent:(c.textContent||'');
+      if(t==='s')val=ss[parseInt(val,10)]||'';
+      row[col-1]=val;
+    });
+    rows.push(row);
+  });
+  return rows;
+}
+function readCsv(text){
+  text=text.replace(/^\uFEFF/,'');
+  const d=text.split(/\r?\n/)[0].includes('\t')?'\t':',';
+  const rows=[];let row=[],c='',q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){c+='"';i++}else q=false}else c+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===d){row.push(c);c=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(c);c='';if(row.some(x=>x.trim()))rows.push(row);row=[]}
+    else c+=ch;
+  }
+  row.push(c);if(row.some(x=>x.trim()))rows.push(row);
+  return rows;
+}
+const SHORT={'FIROZA GLOBAL TRADING LTD-BANGLABAZAR':'FGTL-BB','FIROZA GLOBAL TRADING LTD':'FGTL'};
+const ORDER=['FIROZA GLOBAL TRADING LTD-BANGLABAZAR','FIROZA GLOBAL TRADING LTD'];
+function build(t){
+  const h=(t[0]||[]).map(x=>String(x||'').trim().toLowerCase()),ix=k=>h.indexOf(k);
+  const iD=ix('distributor name'),iR=ix('ra wallet'),iW=ix('agent wallet'),iN=ix('agent shop name'),iC=ix('agent categoy'),iI=ix('mtd ci amt'),iO=ix('mtd co amt'),iT=ix('trx date');
+  if([iD,iR,iW,iN,iC,iI,iO].some(i=>i<0))throw new Error('Column headings not found. Please use the original Daily Transaction Report without changing the headings.');
+  const pad=v=>{v=String(v||'').trim();return v&&v[0]!=='0'?'0'+v:v};
+  const by={};let date='';
+  for(let k=1;k<t.length;k++){
+    const c=t[k],nm=String(c[iD]||'').trim();if(!nm)continue;
+    if(iT>=0&&c[iT]&&!date){const d=parseFloat(c[iT]);date=d>30000?new Date(Date.UTC(1899,11,30)+d*864e5).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}):String(c[iT]).trim().slice(0,10)}
+    (by[nm]=by[nm]||[]).push([pad(c[iR]),pad(c[iW]),String(c[iN]||'').trim(),String(c[iC]||'').trim().toUpperCase(),Math.round((parseFloat(String(c[iI]).replace(/,/g,''))||0)+(parseFloat(String(c[iO]).replace(/,/g,''))||0))]);
+  }
+  const names=Object.keys(by).sort((a,b)=>(ORDER.indexOf(a)<0?9:ORDER.indexOf(a))-(ORDER.indexOf(b)<0?9:ORDER.indexOf(b)));
+  if(!names.length)throw new Error('No agent rows found in this file.');
+  return {asOf:date||new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),dists:names.map(n=>({name:n,short:SHORT[n]||n,rows:by[n].sort((a,b)=>b[4]-a[4])}))};
+}
+let OUT=null;
+$('file').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const m=$('fileMsg');m.className='msg';m.textContent='Reading '+f.name+'…';$('pub').disabled=true;$('sum').innerHTML='';OUT=null;$('pubMsg').textContent='';
+  try{
+    const t=/\.xlsx$/i.test(f.name)?await readXlsx(await f.arrayBuffer()):readCsv(await f.text());
+    OUT=build(t);
+    m.className='msg ok';m.textContent='File is ready. Data as of '+OUT.asOf+'.';
+    $('sum').innerHTML='<table><tr><th>Distribution house</th><th>Agents</th><th>Top agent</th></tr>'+OUT.dists.map(d=>`<tr><td>${esc(d.short)}</td><td>${d.rows.length}</td><td>${esc(d.rows[0][2])} (${fmt(d.rows[0][4])})</td></tr>`).join('')+'</table>';
+    $('pub').disabled=false;
+  }catch(err){m.className='msg err';m.textContent=err.message||'Could not read this file.'}
+});
+
+/* ---------- admin: publish to GitHub ---------- */
+function b64(str){const b=new TextEncoder().encode(str);let s='';for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)}
+$('pub').onclick=async()=>{
+  const m=$('pubMsg');
+  let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  const repo=(s&&s.repo)||$('repo').value.trim(),token=(s&&s.token)||$('token').value.trim();
+  if(!repo||!token){m.className='msg err';m.textContent='Complete step 1 first: add your repository name and access token, then press Save connection.';return}
+  if(!OUT){m.className='msg err';m.textContent='Choose a file in step 2 first.';return}
+  $('pub').disabled=true;m.className='msg';m.textContent='Publishing…';
+  const url='https://api.github.com/repos/'+repo+'/contents/data.json';
+  const H={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  try{
+    const g=await fetch(url,{headers:H});
+    let sha;
+    if(g.status===200)sha=(await g.json()).sha;
+    else if(g.status!==404)throw g.status;
+    const p=await fetch(url,{method:'PUT',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({message:'Update ranking data ('+OUT.asOf+')',content:b64(JSON.stringify(OUT)),sha})});
+    if(!p.ok)throw p.status;
+    m.className='msg ok';m.textContent='Published. Viewers will see the new ranking in one to two minutes.';
+  }catch(c){
+    m.className='msg err';
+    m.textContent=c===401?'GitHub did not accept the token. It may be wrong or expired. Create a new token and save it in step 1.':
+      (c===403||c===404)?'GitHub could not find the repository or the token has no permission. Check the repository name and that the token allows Contents: Read and write for this repository.':
+      (c===409||c===422)?'GitHub reported a conflict. Press Publish update once more.':
+      'Could not publish. Check your internet connection and try again.';
+  }
+  $('pub').disabled=false;
+};
+</script>
+</body>
+</html>
