@@ -11,7 +11,20 @@
 :root{--pink:#c2185b;--ink:#1f1b24;--mute:#5b5461;--line:#e6dde2;--bg:#fbf7f9;--card:#fff;--tint:#fde7ef;--soft:#faf5f7;--ok:#0b6b3a;--bad:#a1123f}
 @media (prefers-color-scheme:dark){:root{--pink:#ff6fa5;--ink:#f3eef1;--mute:#b9aeb6;--line:#3a3139;--bg:#17131a;--card:#211b24;--tint:#4a2236;--soft:#1c1720;--ok:#6ee7a8;--bad:#ff8fb0}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans','Hind Siliguri',system-ui,sans-serif;line-height:1.45}
+<script>
+(function () {
+  // Owner mode: only when the address ends with ?admin
+  var isOwner = new URLSearchParams(location.search).has('admin');
+  if (isOwner) return;
+
+  // Everyone else: hide the Viewer and Admin buttons
+  document.querySelectorAll('button, a').forEach(function (el) {
+    var t = el.textContent.trim();
+    if (t === 'Admin' || t === 'Viewer') el.style.display = 'none';
+  });
+})();
+</script>
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans','Hind Siliguri',system-ui,sans-serif;line-height:1.45}
 .wrap{max-width:1280px;margin:0 auto;padding:24px 20px 56px;display:flex;flex-direction:column;gap:20px}
 h1{margin:0;font-size:clamp(26px,4vw,38px);font-weight:800;font-family:'Hind Siliguri','Plus Jakarta Sans',sans-serif;color:var(--pink)}
 .sub{color:var(--mute);font-size:14px;margin-top:2px}
