@@ -1,19 +1,59 @@
 <style>
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; padding: 12px; font-size: 16px; line-height: 1.5; }
+  /* ---------- Base (phone first) ---------- */
   * { box-sizing: border-box; }
-  img, table { max-width: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 14px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    color: #222;
+    background: #f6f6f8;
+  }
+  h1 { font-size: 1.4rem; line-height: 1.3; margin: 0 0 12px; }
+  h2 { font-size: 1.15rem; margin: 22px 0 10px; }
+  img { max-width: 100%; height: auto; }
 
-  /* Inputs and buttons easy to tap, and no zoom-in on iPhone */
-  input, button { font-size: 16px; min-height: 44px; width: 100%; }
-  button { border-radius: 8px; }
+  /* Inputs and buttons: easy to tap, no auto-zoom on iPhone */
+  input, button, select {
+    font-size: 16px;
+    min-height: 46px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 6px;
+  }
+  button {
+    background: #e2136e;   /* bKash pink */
+    color: #fff;
+    border: 0;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(0.92); }
 
-  /* Wide ranking tables scroll sideways inside their own box */
-  .table-wrap, table { display: block; overflow-x: auto; }
+  /* Tables scroll sideways inside themselves instead of breaking the page */
+  table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+  }
+  th, td { padding: 10px 12px; text-align: left; white-space: nowrap; }
+  tr { border-bottom: 1px solid #eee; }
 
+  /* ---------- Tablet and laptop ---------- */
   @media (min-width: 700px) {
-    body { max-width: 900px; margin: 0 auto; }
-    input, button { width: auto; }
+    body { padding: 28px; font-size: 17px; }
+    body > * { max-width: 960px; margin-left: auto; margin-right: auto; }
+    h1 { font-size: 1.9rem; }
+    h2 { font-size: 1.35rem; }
+    input, button, select { width: auto; min-width: 220px; }
+    table { display: table; width: 100%; }
+    th, td { white-space: normal; }
   }
 </style>
 <!doctype html>
