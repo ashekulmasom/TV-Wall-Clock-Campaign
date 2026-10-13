@@ -165,7 +165,7 @@ function rank(D){
     rest.forEach(r=>clocks.add(r.w));
     thr[c]=rest.length===5?rest[4].v:0;
   });
-  rows.forEach(r=>{r.tv=r.w===tv.w;r.ck=clocks.has(r.w);r.thr=thr[r.cat]});
+  rows.forEach(r=>{r.tvv=tv.v;r.tv=r.w===tv.w;r.ck=clocks.has(r.w);r.thr=thr[r.cat]});
   return rows;
 }
 const chip=r=>r.tv?'<span class="chip tv">টিভি</span>':r.ck?'<span class="chip ck">ঘড়ি</span>':'';
@@ -200,6 +200,7 @@ $('lookupForm').addEventListener('submit',e=>{
   else if(hit.ck)status='<div class="status win">আপনি '+hit.cat+' ক্যাটাগরিতে দেয়াল ঘড়ি জয়ের অবস্থানে আছেন।</div>';
   else if(hit.thr)status='<div class="status no">'+hit.cat+' ক্যাটাগরিতে দেয়াল ঘড়ির অবস্থানে পৌঁছাতে আপনার আরও প্রায় '+fmt(Math.max(1,hit.thr-hit.v+1))+' ক্যাশ ইন ও ক্যাশ আউট প্রয়োজন।</div>';
   else status='<div class="status no">চালিয়ে যান। প্রতিটি লেনদেন আপনার র‍্যাঙ্কে যোগ হচ্ছে।</div>';
+  if(!hit.tv)status+='<div class="status no">৩২" এলইডি টিভি জয়ের অবস্থানে পৌঁছাতে আপনার আরও প্রায় '+fmt(Math.max(1,hit.tvv-hit.v+1))+' ক্যাশ ইন ও ক্যাশ আউট প্রয়োজন।</div>';
   box.innerHTML=`<h3>${esc(hit.n)}</h3><div class="facts">
     <div><b>${hit.rank}</b><span>${esc(hit.house)}-এ র‍্যাঙ্ক (মোট ${fmt(hit.total)} জনের মধ্যে)</span></div>
     <div><b>${hit.cat}</b><span>আপনার ক্যাটাগরি</span></div>
@@ -289,7 +290,7 @@ function build(t){
   const by={};let date='';
   for(let k=1;k<t.length;k++){
     const c=t[k],nm=String(c[iD]||'').trim();if(!nm)continue;
-    if(iT>=0&&c[iT]&&!date){const d=parseFloat(c[iT]);date=d>30000?new Date(Date.UTC(1899,11,30)+d*864e5).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}):String(c[iT]).trim().slice(0,10)}
+    if(iT>=0&&c[iT]&&!date){const d=parseFloat(c[iT]);date=d>30000?new Date(Date.UTC(1899,11,30)+d*864e5).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}):String(c[iT]).trim().slice(0,20)}
     (by[nm]=by[nm]||[]).push([pad(c[iR]),pad(c[iW]),String(c[iN]||'').trim(),String(c[iC]||'').trim().toUpperCase(),Math.round((parseFloat(String(c[iI]).replace(/,/g,''))||0)+(parseFloat(String(c[iO]).replace(/,/g,''))||0))]);
   }
   const names=Object.keys(by).sort((a,b)=>(ORDER.indexOf(a)<0?9:ORDER.indexOf(a))-(ORDER.indexOf(b)<0?9:ORDER.indexOf(b)));
