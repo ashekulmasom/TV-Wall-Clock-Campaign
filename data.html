@@ -174,7 +174,7 @@ const cls=r=>r.tv?'tv':r.ck?'ck':'';
 /* ---------- viewer ---------- */
 function render(){
   const rows=RANKED[cur],D=DATA.dists[cur],tv=rows[0];
-  $('asof').textContent='তথ্য হালনাগাদ: '+DATA.asOf;
+  $('asof').textContent='তথ্য হালনাগাদ: '+String(DATA.asOf).replace(/-(\d{3})$/,(m,y)=>{const Y=String(new Date().getFullYear());return '-'+(Y.indexOf(y)===0?Y:y)});
   $('tvLabel').textContent='৩২" এলইডি টিভি বিজয়ী · '+D.short;
   $('tvName').textContent=tv.n;
   $('tvMeta').textContent=tv.cat+' এজেন্ট · '+tv.w;
