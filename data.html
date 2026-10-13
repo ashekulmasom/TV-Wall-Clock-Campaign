@@ -98,12 +98,11 @@ tr.ck td{background:var(--soft)}
       <div class="result" id="result" aria-live="polite"></div>
     </section>
 
+    <div id="dhArea" style="display:none;flex-direction:column;gap:20px">
     <section class="winner">
       <div><small id="tvLabel">৩২" এলইডি টিভি বিজয়ী</small><div class="name" id="tvName">—</div><small id="tvMeta"></small></div>
       <div class="big"><small>মোট ক্যাশ ইন ও ক্যাশ আউট</small><span id="tvVal">—</span></div>
     </section>
-
-    <div class="pills" id="tabs" role="group" aria-label="ডিস্ট্রিবিউশন হাউস"></div>
 
     <section class="card">
       <h2>সামগ্রিক শীর্ষ ১৫</h2>
@@ -114,6 +113,7 @@ tr.ck td{background:var(--soft)}
     <div class="grid" id="cats"></div>
 
     <p class="rules">বিজয়ী নির্বাচনের নিয়ম: ১ থেকে ৩১ অক্টোবর পর্যন্ত মোট ক্যাশ ইন ও ক্যাশ আউটের ভিত্তিতে প্রতিটি এজেন্টকে তার নিজ ডিস্ট্রিবিউশন হাউসের মধ্যে র‍্যাঙ্ক করা হয়। শীর্ষ র‍্যাঙ্কধারী এজেন্ট একটি ৩২ ইঞ্চি এলইডি টিভি পাবেন। বাকি এজেন্টদের মধ্য থেকে স্টার, গোল্ড, সিলভার ও কার্বন প্রতিটি ক্যাটাগরির শীর্ষ ৫ জন একটি করে দেয়াল ঘড়ি পাবেন।</p>
+    </div>
   </div>
 
   <!-- ================= ADMIN ================= -->
@@ -153,7 +153,6 @@ const MASK='<span aria-label="লুকানো" title="লুকানো">•
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=id=>document.getElementById(id);
-let DATA=null,RANKED=[],cur=0;
 
 /* ---------- ranking ---------- */
 function rank(D){
@@ -173,29 +172,39 @@ const chip=r=>r.tv?'<span class="chip tv">টিভি</span>':r.ck?'<span class
 const cls=r=>r.tv?'tv':r.ck?'ck':'';
 
 /* ---------- viewer ---------- */
-function render(){
-  const rows=RANKED[cur],D=DATA.dists[cur],tv=rows[0];
-  $('asof').textContent='তথ্য হালনাগাদ: '+String(DATA.asOf).replace(/-(\d{3})$/,(m,y)=>{const Y=String(new Date().getFullYear());return '-'+(Y.indexOf(y)===0?Y:y)});
+const fixDate=s=>String(s).replace(/-(\d{3})$/,(m,y)=>{const Y=String(new Date().getFullYear());return '-'+(Y.indexOf(y)===0?Y:y)});
+const getJSON=async u=>{const r=await fetch(u+'?v='+Date.now());if(!r.ok)throw r.status;return r.json()};
+const cache={};
+function render(rows,D){
+  const tv=rows[0];
+  $('asof').textContent='তথ্য হালনাগাদ: '+fixDate(D.asOf);
   $('tvLabel').textContent='৩২" এলইডি টিভি বিজয়ী · '+D.short;
   $('tvName').textContent=tv.n;
   $('tvMeta').textContent=tv.cat+' এজেন্ট · '+hide(tv.w);
   $('tvVal').innerHTML=MASK;
-  $('tabs').innerHTML=DATA.dists.map((d,i)=>`<button class="pill" aria-pressed="${i===cur}" data-i="${i}">${esc(d.short)}</button>`).join('');
-  document.querySelectorAll('#tabs .pill').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render()});
   $('overall').innerHTML='<tr><th>র‍্যাঙ্ক</th><th>এজেন্ট</th><th>ক্যাটাগরি</th><th class="r">ক্যাশ ইন + আউট</th><th class="r">পুরস্কার</th></tr>'+
     rows.slice(0,15).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${hide(r.w)}</div></td><td>${r.cat}</td><td class="r">${MASK}</td><td class="r">${chip(r)}</td></tr>`).join('');
   $('cats').innerHTML=CATS.map(c=>`<section class="card"><h2>${c}</h2><div class="note">ক্যাটাগরির শীর্ষ ১০</div><div class="scroll"><table><tr><th>র‍্যাঙ্ক</th><th>এজেন্ট</th><th class="r">ক্যাশ ইন + আউট</th><th class="r">পুরস্কার</th></tr>`+
     rows.filter(r=>r.cat===c).slice(0,10).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${hide(r.w)}</div></td><td class="r">${MASK}</td><td class="r">${chip(r)}</td></tr>`).join('')+`</table></div></section>`).join('');
+  $('dhArea').style.display='flex';
 }
-$('lookupForm').addEventListener('submit',e=>{
+$('lookupForm').addEventListener('submit',async e=>{
   e.preventDefault();
   let q=$('q').value.replace(/\D/g,'');
   if(q.length===10)q='0'+q;
   const box=$('result');box.style.display='block';
+  $('dhArea').style.display='none';
   if(q.length!==11){box.innerHTML='<h3>নম্বরটি যাচাই করুন</h3><div class="status no">এজেন্ট ওয়ালেট নম্বর ১১ ডিজিটের হয় এবং ০১ দিয়ে শুরু হয়।</div>';return}
-  let hit=null;
-  RANKED.forEach(rows=>{const r=rows.find(x=>x.w===q);if(r)hit=r});
-  if(!hit){box.innerHTML='<h3>নম্বর পাওয়া যায়নি</h3><div class="status no">র‍্যাঙ্কিংয়ে '+esc(q)+' নম্বরটি খুঁজে পাওয়া যায়নি। নম্বরটি যাচাই করে আবার চেষ্টা করুন।</div>';return}
+  box.innerHTML='<div class="status no">খোঁজা হচ্ছে…</div>';
+  let D,hit,rows;
+  try{
+    let key=null;
+    try{const idx=await getJSON('idx/'+q.slice(-2)+'.json');key=idx[q]||null}catch(err){if(err!==404)throw err}
+    if(!key){box.innerHTML='<h3>নম্বর পাওয়া যায়নি</h3><div class="status no">র‍্যাঙ্কিংয়ে '+esc(q)+' নম্বরটি খুঁজে পাওয়া যায়নি। নম্বরটি যাচাই করে আবার চেষ্টা করুন।</div>';return}
+    D=cache[key]||(cache[key]=await getJSON('dh/'+key+'.json'));
+    rows=rank(D);hit=rows.find(x=>x.w===q);
+    if(!hit){box.innerHTML='<h3>নম্বর পাওয়া যায়নি</h3><div class="status no">নম্বরটি যাচাই করে আবার চেষ্টা করুন।</div>';return}
+  }catch(err){box.innerHTML='<h3>তথ্য লোড করা যায়নি</h3><div class="status no">কিছুক্ষণ পর আবার চেষ্টা করুন।</div>';return}
   let status;
   if(hit.tv)status='<div class="status win">আপনি শীর্ষ এজেন্ট এবং বর্তমানে ৩২" এলইডি টিভি জয়ের অবস্থানে আছেন।</div>';
   else if(hit.ck)status='<div class="status win">আপনি '+hit.cat+' ক্যাটাগরিতে দেয়াল ঘড়ি জয়ের অবস্থানে আছেন।</div>';
@@ -207,11 +216,11 @@ $('lookupForm').addEventListener('submit',e=>{
     <div><b>${hit.cat}</b><span>আপনার ক্যাটাগরি</span></div>
     <div><b>${hit.catRank}</b><span>${hit.cat}-এ র‍্যাঙ্ক</span></div>
     <div><b>${fmt(hit.v)}</b><span>ক্যাশ ইন + আউট</span></div></div>${status}`;
+  render(rows,D);
 });
 
-/* ---------- load data ---------- */
-function setData(j){DATA=j;RANKED=j.dists.map(rank);cur=Math.min(cur,j.dists.length-1)}
-fetch('data.json?v='+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{setData(j);render()}).catch(()=>{$('err').style.display='block';$('asof').textContent=''});
+/* ---------- load date ---------- */
+getJSON('meta.json').then(j=>{$('asof').textContent='তথ্য হালনাগাদ: '+fixDate(j.asOf)}).catch(()=>{$('err').style.display='block';$('asof').textContent=''});
 
 /* ---------- mode switch ---------- */
 function mode(m){
@@ -312,23 +321,38 @@ $('file').addEventListener('change',async e=>{
 });
 
 /* ---------- admin: publish to GitHub ---------- */
-function b64(str){const b=new TextEncoder().encode(str);let s='';for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)}
+async function keyOf(name){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(name));return Array.from(new Uint8Array(h)).slice(0,5).map(x=>x.toString(16).padStart(2,'0')).join('')}
 $('pub').onclick=async()=>{
   const m=$('pubMsg');
   let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
   const repo=(s&&s.repo)||$('repo').value.trim(),token=(s&&s.token)||$('token').value.trim();
   if(!repo||!token){m.className='msg err';m.textContent='আগে ধাপ ১ সম্পন্ন করুন: রিপোজিটরির নাম ও অ্যাক্সেস টোকেন দিয়ে "সংযোগ সংরক্ষণ করুন" চাপুন।';return}
   if(!OUT){m.className='msg err';m.textContent='আগে ধাপ ২-এ একটি ফাইল বেছে নিন।';return}
-  $('pub').disabled=true;m.className='msg';m.textContent='প্রকাশ করা হচ্ছে…';
-  const url='https://api.github.com/repos/'+repo+'/contents/data.json';
-  const H={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  $('pub').disabled=true;m.className='msg';m.textContent='প্রস্তুত করা হচ্ছে…';
+  const H={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'};
+  const api=async(path,opt)=>{const r=await fetch('https://api.github.com/repos/'+repo+path,{...(opt||{}),headers:H});if(!r.ok)throw r.status;return r.json()};
   try{
-    const g=await fetch(url,{headers:H});
-    let sha;
-    if(g.status===200)sha=(await g.json()).sha;
-    else if(g.status!==404)throw g.status;
-    const p=await fetch(url,{method:'PUT',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({message:'Update ranking data ('+OUT.asOf+')',content:b64(JSON.stringify(OUT)),sha})});
-    if(!p.ok)throw p.status;
+    const files=[{path:'meta.json',content:JSON.stringify({asOf:OUT.asOf})}],shards={};
+    for(const d of OUT.dists){
+      const key=await keyOf(d.name);
+      files.push({path:'dh/'+key+'.json',content:JSON.stringify({asOf:OUT.asOf,name:d.name,short:d.short,rows:d.rows})});
+      d.rows.forEach(r=>{const k=r[1].slice(-2);(shards[k]=shards[k]||{})[r[1]]=key});
+    }
+    Object.keys(shards).forEach(k=>files.push({path:'idx/'+k+'.json',content:JSON.stringify(shards[k])}));
+    const info=await api('');
+    const branch=info.default_branch;
+    const ref=await api('/git/ref/heads/'+branch),parent=ref.object.sha;
+    const commit=await api('/git/commits/'+parent);
+    const old=await api('/git/trees/'+commit.tree.sha+'?recursive=1');
+    let done=0;const total=files.length,queue=files.slice();
+    const worker=async()=>{while(queue.length){const f=queue.shift();const b=await api('/git/blobs',{method:'POST',body:JSON.stringify({content:f.content,encoding:'utf-8'})});f.sha=b.sha;done++;m.textContent='আপলোড হচ্ছে… '+done+'/'+total}};
+    await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
+    const keep=new Set(files.map(f=>f.path));
+    const dels=old.tree.filter(x=>x.type==='blob'&&(x.path==='data.json'||x.path.startsWith('dh/')||x.path.startsWith('idx/'))&&!keep.has(x.path)).map(x=>({path:x.path,mode:'100644',type:'blob',sha:null}));
+    m.textContent='চূড়ান্ত করা হচ্ছে…';
+    const tree=await api('/git/trees',{method:'POST',body:JSON.stringify({base_tree:commit.tree.sha,tree:files.map(f=>({path:f.path,mode:'100644',type:'blob',sha:f.sha})).concat(dels)})});
+    const nc=await api('/git/commits',{method:'POST',body:JSON.stringify({message:'Update ranking data ('+OUT.asOf+')',tree:tree.sha,parents:[parent]})});
+    await api('/git/refs/heads/'+branch,{method:'PATCH',body:JSON.stringify({sha:nc.sha})});
     m.className='msg ok';m.textContent='প্রকাশিত হয়েছে। এক থেকে দুই মিনিটের মধ্যে দর্শকরা নতুন র‍্যাঙ্কিং দেখতে পাবেন।';
   }catch(c){
     m.className='msg err';
