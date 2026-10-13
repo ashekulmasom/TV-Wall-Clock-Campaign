@@ -148,6 +148,7 @@ tr.ck td{background:var(--soft)}
 
 <script>
 const CATS=['STAR','GOLD','SILVER','CARBON'];
+const MASK='<span aria-label="লুকানো" title="লুকানো">••••••</span>';
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=id=>document.getElementById(id);
@@ -177,13 +178,13 @@ function render(){
   $('tvLabel').textContent='৩২" এলইডি টিভি বিজয়ী · '+D.short;
   $('tvName').textContent=tv.n;
   $('tvMeta').textContent=tv.cat+' এজেন্ট · '+tv.w;
-  $('tvVal').textContent=fmt(tv.v);
+  $('tvVal').innerHTML=MASK;
   $('tabs').innerHTML=DATA.dists.map((d,i)=>`<button class="pill" aria-pressed="${i===cur}" data-i="${i}">${esc(d.short)}</button>`).join('');
   document.querySelectorAll('#tabs .pill').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render()});
   $('overall').innerHTML='<tr><th>র‍্যাঙ্ক</th><th>এজেন্ট</th><th>ক্যাটাগরি</th><th class="r">ক্যাশ ইন + আউট</th><th class="r">পুরস্কার</th></tr>'+
-    rows.slice(0,15).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${r.w}</div></td><td>${r.cat}</td><td class="r">${fmt(r.v)}</td><td class="r">${chip(r)}</td></tr>`).join('');
+    rows.slice(0,15).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${r.w}</div></td><td>${r.cat}</td><td class="r">${MASK}</td><td class="r">${chip(r)}</td></tr>`).join('');
   $('cats').innerHTML=CATS.map(c=>`<section class="card"><h2>${c}</h2><div class="note">ক্যাটাগরির শীর্ষ ১০</div><div class="scroll"><table><tr><th>র‍্যাঙ্ক</th><th>এজেন্ট</th><th class="r">ক্যাশ ইন + আউট</th><th class="r">পুরস্কার</th></tr>`+
-    rows.filter(r=>r.cat===c).slice(0,10).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${r.w}</div></td><td class="r">${fmt(r.v)}</td><td class="r">${chip(r)}</td></tr>`).join('')+`</table></div></section>`).join('');
+    rows.filter(r=>r.cat===c).slice(0,10).map(r=>`<tr class="${cls(r)}"><td class="rk">${r.rank}</td><td>${esc(r.n)}<div class="wal">${r.w}</div></td><td class="r">${MASK}</td><td class="r">${chip(r)}</td></tr>`).join('')+`</table></div></section>`).join('');
 }
 $('lookupForm').addEventListener('submit',e=>{
   e.preventDefault();
